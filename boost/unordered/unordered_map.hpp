@@ -104,6 +104,8 @@ namespace boost
         {
         }
 
+        ~unordered_map() {}
+
 #if defined(BOOST_HAS_RVALUE_REFS)
         unordered_map(unordered_map&& other)
             : base(other.base, boost::unordered_detail::move_tag())
@@ -509,6 +511,8 @@ namespace boost
           : base(f, l, n, hf, eql, a)
         {
         }
+
+        ~unordered_multimap() {}
 
 #if defined(BOOST_HAS_RVALUE_REFS)
         unordered_multimap(unordered_multimap&& other)
