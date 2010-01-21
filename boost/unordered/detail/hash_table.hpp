@@ -97,12 +97,6 @@ namespace boost {
 
         // prime number list, accessor
 
-        template<typename T> struct prime_list_template
-        {
-            static std::size_t const value[];
-            static std::ptrdiff_t const length;
-        };
-
 #define BOOST_UNORDERED_PRIMES \
         (5ul)(11ul)(17ul)(29ul)(37ul)(53ul)(67ul)(79ul) \
         (97ul)(131ul)(193ul)(257ul)(389ul)(521ul)(769ul) \
@@ -112,14 +106,28 @@ namespace boost {
         (50331653ul)(100663319ul)(201326611ul)(402653189ul)(805306457ul) \
         (1610612741ul)(3221225473ul)(4294967291ul)
 
+        template<typename T> struct prime_list_template
+        {
+            static std::size_t const value[];
+
+#if !defined(SUNPRO_CC)
+        static std::ptrdiff_t const length;
+#else
+        static std::ptrdiff_t const length
+            = BOOST_PP_SEQ_SIZE(BOOST_UNORDERED_PRIMES);
+#endif
+        };
+
         template<typename T>
         std::size_t const prime_list_template<T>::value[] = {
             BOOST_PP_SEQ_ENUM(BOOST_UNORDERED_PRIMES)
         };
 
+#if !defined(SUNPRO_CC)
         template<typename T>
         std::ptrdiff_t const prime_list_template<T>::length
             = BOOST_PP_SEQ_SIZE(BOOST_UNORDERED_PRIMES);
+#endif
 
 #undef BOOST_UNORDERED_PRIMES
 
