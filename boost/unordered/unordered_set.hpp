@@ -41,7 +41,9 @@ namespace unordered
     template <class T, class H, class P, class A>
     class unordered_set
     {
+#if defined(BOOST_UNORDERED_USE_MOVE)
         BOOST_COPYABLE_AND_MOVABLE(unordered_set)
+#endif
     public:
 
         typedef T key_type;
@@ -119,10 +121,17 @@ namespace unordered
 
         unordered_set(unordered_set const&, allocator_type const&);
 
+#if defined(BOOST_UNORDERED_USE_MOVE)
         unordered_set(BOOST_RV_REF(unordered_set) other)
             : table_(other.table_, boost::unordered::detail::move_tag())
         {
         }
+#elif !defined(BOOST_NO_RVALUE_REFERENCES)
+        unordered_set(unordered_set&& other)
+            : table_(other.table_, boost::unordered::detail::move_tag())
+        {
+        }
+#endif
 
 #if !defined(BOOST_NO_RVALUE_REFERENCES)
         unordered_set(unordered_set&&, allocator_type const&);
@@ -143,6 +152,7 @@ namespace unordered
 
         // Assign
 
+#if defined(BOOST_UNORDERED_USE_MOVE)
         unordered_set& operator=(BOOST_COPY_ASSIGN_REF(unordered_set) x)
         {
             table_.assign(x.table_);
@@ -154,6 +164,21 @@ namespace unordered
             table_.move_assign(x.table_);
             return *this;
         }
+#else
+        unordered_set& operator=(unordered_set const& x)
+        {
+            table_.assign(x.table_);
+            return *this;
+        }
+
+#if !defined(BOOST_NO_RVALUE_REFERENCES)
+        unordered_set& operator=(unordered_set&& x)
+        {
+            table_.move_assign(x.table_);
+            return *this;
+        }
+#endif
+#endif
 
 #if !defined(BOOST_NO_0X_HDR_INITIALIZER_LIST)
         unordered_set& operator=(std::initializer_list<value_type>);
@@ -418,7 +443,9 @@ namespace unordered
     template <class T, class H, class P, class A>
     class unordered_multiset
     {
+#if defined(BOOST_UNORDERED_USE_MOVE)
         BOOST_COPYABLE_AND_MOVABLE(unordered_multiset)
+#endif
     public:
 
         typedef T key_type;
@@ -496,10 +523,17 @@ namespace unordered
 
         unordered_multiset(unordered_multiset const&, allocator_type const&);
 
+#if defined(BOOST_UNORDERED_USE_MOVE)
         unordered_multiset(BOOST_RV_REF(unordered_multiset) other)
             : table_(other.table_, boost::unordered::detail::move_tag())
         {
         }
+#elif !defined(BOOST_NO_RVALUE_REFERENCES)
+        unordered_multiset(unordered_multiset&& other)
+            : table_(other.table_, boost::unordered::detail::move_tag())
+        {
+        }
+#endif
 
 #if !defined(BOOST_NO_RVALUE_REFERENCES)
         unordered_multiset(unordered_multiset&&, allocator_type const&);
@@ -520,6 +554,7 @@ namespace unordered
 
         // Assign
 
+#if defined(BOOST_UNORDERED_USE_MOVE)
         unordered_multiset& operator=(
                 BOOST_COPY_ASSIGN_REF(unordered_multiset) x)
         {
@@ -532,6 +567,21 @@ namespace unordered
             table_.move_assign(x.table_);
             return *this;
         }
+#else
+        unordered_multiset& operator=(unordered_multiset const& x)
+        {
+            table_.assign(x.table_);
+            return *this;
+        }
+
+#if !defined(BOOST_NO_RVALUE_REFERENCES)
+        unordered_multiset& operator=(unordered_multiset&& x)
+        {
+            table_.move_assign(x.table_);
+            return *this;
+        }
+#endif
+#endif
 
 #if !defined(BOOST_NO_0X_HDR_INITIALIZER_LIST)
         unordered_multiset& operator=(std::initializer_list<value_type>);
