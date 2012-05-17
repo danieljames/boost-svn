@@ -164,7 +164,7 @@ BOOST_PP_REPEAT_FROM_TO(1, BOOST_UNORDERED_EMPLACE_LIMIT, BOOST_UNORDERED_EARGS,
 
 #define BOOST_UNORDERED_CONSTRUCT_FROM_TUPLE(n, namespace_)                 \
     template<typename T>                                                    \
-    void construct_from_tuple(T* ptr, namespace_::tuple<>)                  \
+    void construct_from_tuple(T* ptr, namespace_ tuple<>)                   \
     {                                                                       \
         new ((void*) ptr) T();                                              \
     }                                                                       \
@@ -175,7 +175,7 @@ BOOST_PP_REPEAT_FROM_TO(1, BOOST_UNORDERED_EMPLACE_LIMIT, BOOST_UNORDERED_EARGS,
 #define BOOST_UNORDERED_CONSTRUCT_FROM_TUPLE_IMPL(z, n, namespace_)         \
     template<typename T, BOOST_PP_ENUM_PARAMS_Z(z, n, typename A)>          \
     void construct_from_tuple(T* ptr,                                       \
-            namespace_::tuple<BOOST_PP_ENUM_PARAMS_Z(z, n, A)> const& x)    \
+            namespace_ tuple<BOOST_PP_ENUM_PARAMS_Z(z, n, A)> const& x)     \
     {                                                                       \
         new ((void*) ptr) T(                                                \
             BOOST_PP_ENUM_##z(n, BOOST_UNORDERED_GET_TUPLE_ARG, namespace_) \
@@ -183,12 +183,12 @@ BOOST_PP_REPEAT_FROM_TO(1, BOOST_UNORDERED_EMPLACE_LIMIT, BOOST_UNORDERED_EARGS,
     }
 
 #define BOOST_UNORDERED_GET_TUPLE_ARG(z, n, namespace_)                     \
-    namespace_::get<n>(x)
+    namespace_ get<n>(x)
 
-BOOST_UNORDERED_CONSTRUCT_FROM_TUPLE(10, boost)
+BOOST_UNORDERED_CONSTRUCT_FROM_TUPLE(10, boost::)
 
 #if !defined(BOOST_NO_0X_HDR_TUPLE)
-BOOST_UNORDERED_CONSTRUCT_FROM_TUPLE(10, std)
+BOOST_UNORDERED_CONSTRUCT_FROM_TUPLE(10, std::)
 #endif
 
 #undef BOOST_UNORDERED_CONSTRUCT_FROM_TUPLE
@@ -207,11 +207,11 @@ BOOST_UNORDERED_CONSTRUCT_FROM_TUPLE(10, std)
         new ((void*) ptr) T();
     }
 
-#define BOOST_UNORDERED_CONSTRUCT_FROM_TUPLE_IMPL(z, n, _)                  \
+#define BOOST_UNORDERED_CONSTRUCT_FROM_TUPLE_IMPL(z, n, namespace_)         \
     template<typename T, BOOST_PP_ENUM_PARAMS_Z(z, n, typename A)>          \
     void construct_from_tuple_impl(                                         \
             boost::unordered::detail::length<n>, T* ptr,                    \
-            namespace_::tuple<BOOST_PP_ENUM_PARAMS_Z(z, n, A)> const& x)    \
+            namespace_ tuple<BOOST_PP_ENUM_PARAMS_Z(z, n, A)> const& x)     \
     {                                                                       \
         new ((void*) ptr) T(                                                \
             BOOST_PP_ENUM_##z(n, BOOST_UNORDERED_GET_TUPLE_ARG, namespace_) \
@@ -219,10 +219,10 @@ BOOST_UNORDERED_CONSTRUCT_FROM_TUPLE(10, std)
     }
 
 #define BOOST_UNORDERED_GET_TUPLE_ARG(z, n, _)                              \
-    boost::get<n>(x)
+    namespace_ get<n>(x)
 
     BOOST_PP_REPEAT_FROM_TO(1, 10,                                          \
-        BOOST_UNORDERED_CONSTRUCT_FROM_TUPLE_IMPL, _)
+        BOOST_UNORDERED_CONSTRUCT_FROM_TUPLE_IMPL, boost::)
 
     template <typename T, typename Tuple>
     void construct_from_tuple(T* ptr, Tuple const& x)
