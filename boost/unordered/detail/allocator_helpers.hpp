@@ -325,35 +325,39 @@ namespace boost { namespace unordered { namespace detail {
 #   endif
 
     template <typename Alloc>
-    inline typename boost::enable_if_c<
+    inline Alloc call_select_on_container_copy_construction(const Alloc& rhs,
+	typename boost::enable_if_c<
             boost::unordered::detail::
-            has_select_on_container_copy_construction<Alloc>::value, Alloc
-        >::type call_select_on_container_copy_construction(const Alloc& rhs)
+            has_select_on_container_copy_construction<Alloc>::value, void*
+        >::type = 0)
     {
         return rhs.select_on_container_copy_construction();
     }
 
     template <typename Alloc>
-    inline typename boost::disable_if_c<
+    inline Alloc call_select_on_container_copy_construction(const Alloc& rhs,
+	typename boost::disable_if_c<
             boost::unordered::detail::
-            has_select_on_container_copy_construction<Alloc>::value, Alloc
-        >::type call_select_on_container_copy_construction(const Alloc& rhs)
+            has_select_on_container_copy_construction<Alloc>::value, void*
+        >::type = 0)
     {
         return rhs;
     }
 
     template <typename SizeType, typename Alloc>
-    inline typename boost::enable_if_c<
-            boost::unordered::detail::has_max_size<Alloc>::value, SizeType
-        >::type call_max_size(const Alloc& a)
+    inline SizeType call_max_size(const Alloc& a,
+	typename boost::enable_if_c<
+            boost::unordered::detail::has_max_size<Alloc>::value, void*
+        >::type = 0)
     {
         return a.max_size();
     }
 
     template <typename SizeType, typename Alloc>
-    inline typename boost::disable_if_c<
-            boost::unordered::detail::has_max_size<Alloc>::value, SizeType
-        >::type call_max_size(const Alloc&)
+    inline SizeType call_max_size(const Alloc&,
+	typename boost::disable_if_c<
+            boost::unordered::detail::has_max_size<Alloc>::value, void*
+        >::type = 0)
     {
         return (std::numeric_limits<SizeType>::max)();
     }
@@ -481,41 +485,41 @@ namespace boost { namespace unordered { namespace detail {
         // the only construct method that old fashioned allocators support.
 
         template <typename T>
-        static typename boost::enable_if_c<
+        static void construct(Alloc& a, T* p, T const& x,
+		typename boost::enable_if_c<
                 boost::unordered::detail::has_construct<Alloc, T>::value &&
-                boost::is_same<T, value_type>::value
-            >::type
-            construct(Alloc& a, T* p, T const& x)
+                boost::is_same<T, value_type>::value,
+                void*>::type = 0)
         {
             a.construct(p, x);
         }
 
         template <typename T>
-        static typename boost::disable_if_c<
+        static void construct(Alloc&, T* p, T const& x,
+		typename boost::disable_if_c<
                 boost::unordered::detail::has_construct<Alloc, T>::value &&
-                boost::is_same<T, value_type>::value
-            >::type
-            construct(Alloc&, T* p, T const& x)
+                boost::is_same<T, value_type>::value,
+		void*>::type = 0)
         {
             new ((void*) p) T(x);
         }
 
         template <typename T>
-        static typename boost::enable_if_c<
+        static void destroy(Alloc& a, T* p,
+		typename boost::enable_if_c<
                 boost::unordered::detail::has_destroy<Alloc, T>::value &&
-                boost::is_same<T, value_type>::value
-            >::type
-            destroy(Alloc& a, T* p)
+                boost::is_same<T, value_type>::value,
+                void*>::type = 0)
         {
             a.destroy(p);
         }
 
         template <typename T>
-        static typename boost::disable_if_c<
+        static void destroy(Alloc&, T* p,
+		typename boost::disable_if_c<
                 boost::unordered::detail::has_destroy<Alloc, T>::value &&
-                boost::is_same<T, value_type>::value
-            >::type
-            destroy(Alloc&, T* p)
+                boost::is_same<T, value_type>::value,
+            void*>::type = 0)
         {
             boost::unordered::detail::destroy(p);
         }

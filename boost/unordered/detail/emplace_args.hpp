@@ -435,9 +435,9 @@ BOOST_UNORDERED_CONSTRUCT_FROM_TUPLE(10, boost::)
 #undef BOOST_UNORDERED_CONSTRUCT_IMPL
 
     template <typename A, typename B, typename A0, typename A1, typename A2>
-    inline typename enable_if<piecewise3<A, B, A0>, void>::type
-        construct_impl(std::pair<A, B>* address,
-            boost::unordered::detail::emplace_args3<A0, A1, A2> const& args)
+    inline void construct_impl(std::pair<A, B>* address,
+            boost::unordered::detail::emplace_args3<A0, A1, A2> const& args,
+            typename enable_if<piecewise3<A, B, A0>, void*>::type = 0)
     {
         boost::unordered::detail::construct_from_tuple(
             boost::addressof(address->first), args.a1);
@@ -448,9 +448,9 @@ BOOST_UNORDERED_CONSTRUCT_FROM_TUPLE(10, boost::)
 #if defined(BOOST_UNORDERED_DEPRECATED_PAIR_CONSTRUCT)
 
     template <typename A, typename B, typename A0>
-    inline typename enable_if<emulation1<A, B, A0>, void>::type
-        construct_impl(std::pair<A, B>* address,
-            boost::unordered::detail::emplace_args1<A0> const& args)
+    inline void construct_impl(std::pair<A, B>* address,
+            boost::unordered::detail::emplace_args1<A0> const& args,
+            typename enable_if<emulation1<A, B, A0>, void*>::type = 0)
     {
         new((void*) boost::addressof(address->first)) A(
             boost::forward<A0>(args.a0));
@@ -458,9 +458,9 @@ BOOST_UNORDERED_CONSTRUCT_FROM_TUPLE(10, boost::)
     }
 
     template <typename A, typename B, typename A0, typename A1, typename A2>
-    inline typename enable_if<emulation3<A, B, A0>, void>::type
-        construct_impl(std::pair<A, B>* address,
-            boost::unordered::detail::emplace_args3<A0, A1, A2> const& args)
+    inline void construct_impl(std::pair<A, B>* address,
+            boost::unordered::detail::emplace_args3<A0, A1, A2> const& args,
+            typename enable_if<emulation3<A, B, A0>, void*>::type = 0)
     {
         new((void*) boost::addressof(address->first)) A(
             boost::forward<A0>(args.a0));
