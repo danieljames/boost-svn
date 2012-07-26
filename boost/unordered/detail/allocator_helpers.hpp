@@ -315,35 +315,39 @@ namespace boost { namespace unordered { namespace detail {
 #endif
 
     template <typename Alloc>
-    inline typename boost::enable_if_c<
+    inline Alloc call_select_on_container_copy_construction(const Alloc& rhs,
+	typename boost::enable_if_c<
             boost::unordered::detail::
-            has_select_on_container_copy_construction<Alloc>::value, Alloc
-        >::type call_select_on_container_copy_construction(const Alloc& rhs)
+            has_select_on_container_copy_construction<Alloc>::value, void*
+        >::type = 0)
     {
         return rhs.select_on_container_copy_construction();
     }
 
     template <typename Alloc>
-    inline typename boost::disable_if_c<
+    inline Alloc call_select_on_container_copy_construction(const Alloc& rhs,
+	typename boost::disable_if_c<
             boost::unordered::detail::
-            has_select_on_container_copy_construction<Alloc>::value, Alloc
-        >::type call_select_on_container_copy_construction(const Alloc& rhs)
+            has_select_on_container_copy_construction<Alloc>::value, void*
+        >::type = 0)
     {
         return rhs;
     }
 
     template <typename SizeType, typename Alloc>
-    inline typename boost::enable_if_c<
-            boost::unordered::detail::has_max_size<Alloc>::value, SizeType
-        >::type call_max_size(const Alloc& a)
+    inline SizeType call_max_size(const Alloc& a,
+	typename boost::enable_if_c<
+            boost::unordered::detail::has_max_size<Alloc>::value, void*
+        >::type = 0)
     {
         return a.max_size();
     }
 
     template <typename SizeType, typename Alloc>
-    inline typename boost::disable_if_c<
-            boost::unordered::detail::has_max_size<Alloc>::value, SizeType
-        >::type call_max_size(const Alloc&)
+    inline SizeType call_max_size(const Alloc&,
+	typename boost::disable_if_c<
+            boost::unordered::detail::has_max_size<Alloc>::value, void*
+        >::type = 0)
     {
         return (std::numeric_limits<SizeType>::max)();
     }
