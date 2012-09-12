@@ -659,7 +659,7 @@ namespace boost { namespace unordered { namespace detail {
         // strong otherwise exception safety
         void rehash_impl(std::size_t num_buckets)
         {
-            BOOST_ASSERT(this->size_);
+            BOOST_ASSERT(this->buckets_);
 
             buckets dst(this->node_alloc(), num_buckets);
             dst.create_buckets();
