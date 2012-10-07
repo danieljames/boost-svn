@@ -206,9 +206,9 @@ namespace boost { namespace unordered_detail {
 
                 if(begin == group2) {
                     node_ptr end1 = get(group1).group_prev_;
-                    node_ptr end2 = get(group2).group_prev_;
+                    node_ptr end2 = get(end).group_prev_;
                     get(group1).group_prev_ = end2;
-                    get(group2).group_prev_ = end1;
+                    get(end).group_prev_ = end1;
                 }
             }
         }
