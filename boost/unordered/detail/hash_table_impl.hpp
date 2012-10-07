@@ -820,8 +820,8 @@ namespace boost {
 
                 if(BOOST_UNORDERED_BORLAND_BOOL(begin1) && split1 == begin2) {
                     link_ptr end1 = prev_in_group(begin1);
-                    prev_in_group(begin1) = prev_in_group(begin2);
-                    prev_in_group(begin2) = end1;
+                    prev_in_group(begin1) = prev_in_group(split2);
+                    prev_in_group(split2) = end1;
                 }
             }
 #else
