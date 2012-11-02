@@ -136,7 +136,7 @@ namespace boost
             }
 
             v = boost::hash_detail::call_ldexp(v,
-                    limits<std::size_t>::digits + 1);
+                    limits<std::size_t>::digits);
             std::size_t seed = static_cast<std::size_t>(v);
             v -= seed;
 
