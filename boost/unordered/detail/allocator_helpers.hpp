@@ -18,6 +18,7 @@
 #include <boost/unordered/detail/emplace_args.hpp>
 #include <boost/assert.hpp>
 #include <boost/utility/addressof.hpp>
+#include <boost/detail/no_exceptions_support.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -637,13 +638,14 @@ namespace boost { namespace unordered { namespace detail {
     inline void construct_node(Alloc& a, T* p, BOOST_UNORDERED_EMPLACE_ARGS)
     {
         boost::unordered::detail::allocator_traits<Alloc>::construct(a, p, T());
-        try {
+        BOOST_TRY {
             boost::unordered::detail::construct_impl(
                 p->value_ptr(), BOOST_UNORDERED_EMPLACE_FORWARD);
-        } catch(...) {
+        } BOOST_CATCH(...) {
             boost::unordered::detail::allocator_traits<Alloc>::destroy(a, p);
-            throw;
+            BOOST_RETHROW;
         }
+        BOOST_CATCH_END
     }
 
     template <typename Alloc, typename T>
