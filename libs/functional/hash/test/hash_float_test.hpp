@@ -118,19 +118,6 @@ void float_tests(char const* name, T* = 0)
     T quarter_max = max / 4;
     T three_quarter_max = max - quarter_max;
 
-    // Check the limits::max is in range.
-    BOOST_TEST(max != half_max);
-    BOOST_TEST(max != quarter_max);
-    BOOST_TEST(max != three_quarter_max);
-    BOOST_TEST(half_max != quarter_max);
-    BOOST_TEST(half_max != three_quarter_max);
-    BOOST_TEST(quarter_max != three_quarter_max);
-
-    BOOST_TEST(max != -max);
-    BOOST_TEST(half_max != -half_max);
-    BOOST_TEST(quarter_max != -quarter_max);
-    BOOST_TEST(three_quarter_max != -three_quarter_max);
-
     BOOST_TEST(x1(max) == HASH_NAMESPACE::hash_value(max));
     BOOST_TEST(x1(half_max) == HASH_NAMESPACE::hash_value(half_max));
     BOOST_TEST(x1(quarter_max) == HASH_NAMESPACE::hash_value(quarter_max));
