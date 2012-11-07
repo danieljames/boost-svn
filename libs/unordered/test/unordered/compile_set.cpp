@@ -7,9 +7,7 @@
 // requirements. Makes sure everything compiles and is defined correctly.
 
 #include "../helpers/prefix.hpp"
-
 #include <boost/unordered_set.hpp>
-
 #include <iostream>
 #include "../helpers/test.hpp"
 #include "../objects/minimal.hpp"

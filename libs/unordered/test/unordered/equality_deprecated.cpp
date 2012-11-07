@@ -6,7 +6,6 @@
 #define BOOST_UNORDERED_DEPRECATED_EQUALITY
 
 #include "../helpers/prefix.hpp"
-
 #include <boost/unordered_set.hpp>
 #include <boost/unordered_map.hpp>
 #include <boost/preprocessor/seq.hpp>
