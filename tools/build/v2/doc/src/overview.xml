@@ -17,20 +17,20 @@
       Boost.Build actually consists of two parts - Boost.Jam, a build engine
       with its own interpreted language, and Boost.Build itself, implemented in
       Boost.Jam's language. The chain of events when you type
-      <command>bjam</command> on the command line is as follows:
+      <command>b2</command> on the command line is as follows:
       <orderedlist>
         <listitem>
           <para>
-            Boost.Jam tries to find Boost.Build and loads the top-level module.
-            The exact process is described in <xref linkend=
+            The Boost.Build executable tries to find Boost.Build modules and
+            loads the top-level module. The exact process is described in <xref linkend=
             "bbv2.reference.init"/>
           </para>
         </listitem>
         <listitem>
           <para>
             The top-level module loads user-defined configuration files,
-            <filename>user-config.jam</filename> and <filename>site-config.jam
-            </filename>, which define available toolsets.
+            <filename>user-config.jam</filename> and
+            <filename>site-config.jam</filename>, which define available toolsets.
           </para>
         </listitem>
         <listitem>
@@ -97,31 +97,31 @@
 a.o: a.c
     g++ -o a.o -g a.c
 </programlisting>
-        This is rather low-level description mechanism and it's hard to adjust commands, options,
-        and sets of created targets depending on the used compiler and operating system.        
+        This is a rather low-level description mechanism and it's hard to adjust commands, options,
+        and sets of created targets depending on the compiler and operating system used.
       </para>
 
       <para>
-        To improve portability, most modern build system provide a set of higher-level 
+        To improve portability, most modern build system provide a set of higher-level
         functions that can be used in build description files. Consider this example:
 <programlisting>
 add_program ("a", "a.c")
 </programlisting>
-        This is a function call that creates targets necessary to create executable file
-        from source file <filename>a.c</filename>. Depending on configured properties,
-        different commands line may be used. However, <code>add_program</code> is higher-level,
-        but rather thin level. All targets are created immediately when build description
+        This is a function call that creates the targets necessary to create a executable file
+        from the source file <filename>a.c</filename>. Depending on configured properties,
+        different command lines may be used. However, <code>add_program</code> is higher-level,
+        but rather thin level. All targets are created immediately when the build description
         is parsed, which makes it impossible to perform multi-variant builds. Often, change
-        in any build property requires complete reconfiguration of the build tree.        
+        in any build property requires a complete reconfiguration of the build tree.
       </para>
 
       <para>
-        In order to support true multivariant builds, Boost.Build introduces the concept of
+        In order to support true multivariant builds, Boost.Build introduces the concept of a
         <indexterm> <primary>metatarget</primary> <secondary>definition</secondary></indexterm>
         <indexterm> <primary>main target</primary> <see>metataget</see> </indexterm>
-        <firstterm>metatarget</firstterm>&mdash;object that is created when build description
-        is parsed and can be later called with specific build properties to generate
-        actual targets. 
+        <firstterm>metatarget</firstterm>&mdash;an object that is created when the build description
+        is parsed and can be called later with specific build properties to generate
+        actual targets.
       </para>
 
       <para>
@@ -130,11 +130,11 @@ add_program ("a", "a.c")
 exe a : a.cpp ;
 </programlisting>
         When this declaration is parsed, Boost.Build creates a metatarget, but does not
-        yet decides what files must be created, or what commands must be used. After
-        all build files are parsed, Boost.Build considers properties requested on the
+        yet decide what files must be created, or what commands must be used. After
+        all build files are parsed, Boost.Build considers the properties requested on the
         command line. Supposed you have invoked Boost.Build with:
 <screen>
-bjam toolset=gcc toolset=msvc
+b2 toolset=gcc toolset=msvc
 </screen>
         In that case, the metatarget will be called twice, once with <code>toolset=gcc</code>
         and once with <code>toolset=msvc</code>. Both invocations will produce concrete
@@ -142,9 +142,9 @@ bjam toolset=gcc toolset=msvc
       </para>
 
       <para>
-        Another key concept is 
+        Another key concept is
         <indexterm><primary>property</primary><secondary>definition</secondary></indexterm>
-        <firstterm>build property</firstterm>. Build property is a variable
+        <firstterm>build property</firstterm>. A build property is a variable
         that affects the build process. It can be specified on the command line, and is
         passed when calling a metatarget. While all build tools have a similar mechanism,
         Boost.Build differs by requiring that all build properties are declared in advance,
@@ -154,27 +154,27 @@ bjam toolset=gcc toolset=msvc
       <para>
         The final concept is <indexterm><primary>property</primary><secondary>propagation</secondary></indexterm>
         <firstterm>property propagation</firstterm>. Boost.Build does not require that every
-        metatarget is called with the same properties. Instead, the 
+        metatarget is called with the same properties. Instead, the
         "top-level" metatargets are called with the properties specified on the command line.
         Each metatarget can elect to augment or override some properties (in particular,
         using the requirements mechanism, see <xref linkend="bbv2.overview.targets.requirements"/>).
-        Then, the dependency metatargets are called with modified properties and produce
-        concrete targets that are then used in build process. Of course, dependency metatargets
+        Then, the dependency metatargets are called with the modified properties and produce
+        concrete targets that are then used in the build process. Of course, dependency metatargets
         maybe in turn modify build properties and have dependencies of their own.
       </para>
 
-      <para>For more in-depth treatment of the requirements and concepts, you may refer 
+      <para>For a more in-depth treatment of the requirements and concepts, you may refer
       to <ulink url="http://syrcose.ispras.ru/2009/files/04_paper.pdf">SYRCoSE 2009 Boost.Build article</ulink>.
       </para>
-           
+
     </section>
 
     <section id="bbv2.overview.jam_language">
       <title>Boost.Jam Language</title>
 
       <para>
-        This section will describe the basics of the Boost.Jam language&#x2014;
-        just enough for writing Jamfiles. For more information, please see the
+        This section will describe the basics of the Boost.Jam language&#x2014;just
+        enough for writing Jamfiles. For more information, please see the
         <link linkend="bbv2.jam">Boost.Jam</link> documentation.
       </para>
 
@@ -182,8 +182,8 @@ bjam toolset=gcc toolset=msvc
         <link linkend="bbv2.jam">Boost.Jam</link> has an interpreted, procedural
         language. On the lowest level, a <link linkend="bbv2.jam">Boost.Jam
         </link> program consists of variables and <indexterm><primary>rule
-        </primary></indexterm> <firstterm>rules</firstterm> (Jam term for
-        function). They are grouped into modules&#x2014;there is one global
+        </primary></indexterm> <firstterm>rules</firstterm> (the Jam term for
+        functions). They are grouped into modules&#x2014;there is one global
         module and a number of named modules. Besides that, a <link linkend=
         "bbv2.jam">Boost.Jam</link> program contains classes and class
         instances.
@@ -325,7 +325,7 @@ rule test ( )
 import <replaceable>module</replaceable> ;
 import <replaceable>module</replaceable> : <replaceable>rule</replaceable> ;
 </programlisting>
-        The first form imports the specified bjam module. All rules from that
+        The first form imports the specified module. All rules from that
         module are made available using the qualified name: <code><replaceable>
         module</replaceable>.<replaceable>rule</replaceable></code>. The second
         form imports the specified rules only, and they can be called using
@@ -333,8 +333,8 @@ import <replaceable>module</replaceable> : <replaceable>rule</replaceable> ;
       </para>
 
       <para id="bbv2.overview.jam_language.actions">
-        Sometimes, you'd need to specify the actual command lines to be used
-        when creating targets. In jam language, you use named actions to do
+        Sometimes, you need to specify the actual command lines to be used
+        when creating targets. In the jam language, you use named actions to do
         this. For example:
 <programlisting>
 actions create-file-from-another
@@ -350,8 +350,8 @@ actions create-file-from-another
       </para>
 
       <para>
-        To flexibly adjust the command line, you can define a rule with the same
-        name as the action and taking three parameters -- targets, sources and
+        To adjust the command line flexibly, you can define a rule with the same
+        name as the action and taking three parameters&mdash;targets, sources and
         properties. For example:
 <programlisting>
 rule create-file-from-another ( targets * : sources * : properties * )
@@ -366,8 +366,8 @@ actions create-file-from-another
     create-file-from-another $(OPTIONS) $(&lt;) $(&gt;)
 }
 </programlisting>
-        In this example, the rule checks if certain build property is specified.
-        If so, it sets variable <varname>OPIONS</varname> that is then used
+        In this example, the rule checks if a certain build property is specified.
+        If so, it sets the variable <varname>OPTIONS</varname> that is then used
         inside the action. Note that the variables set "on a target" will be
         visible only inside actions building that target, not globally. Were
         they set globally, using variable named <varname>OPTIONS</varname> in
@@ -375,7 +375,7 @@ actions create-file-from-another
       </para>
 
       <para>
-        More details can be found in Jam reference, <xref
+        More details can be found in the Jam reference, <xref
         linkend="jam.language.rules"/>.
       </para>
     </section>
@@ -384,57 +384,57 @@ actions create-file-from-another
     <title>Configuration</title>
 
     <para>
-      On startup, Boost.Build searches and reads two configuration files: 
+      On startup, Boost.Build searches and reads two configuration files:
       <filename>site-config.jam</filename> and <filename>user-config.jam</filename>.
-      The first one is usually installed and maintained by system administrator, and
-      the second is for user to modify.  You can edit the one in the top-level
-      directory of Boost.Build installation or create a copy in your home
+      The first one is usually installed and maintained by a system administrator, and
+      the second is for the user to modify.  You can edit the one in the top-level
+      directory of your Boost.Build installation or create a copy in your home
       directory and edit the copy.  The following table explains where both files
       are searched.
     </para>
-    
+
     <table id="bbv2.reference.init.config">
       <title>Search paths for configuration files</title>
-      
+
       <tgroup cols="3">
         <thead>
-          
+
           <row>
             <entry></entry>
-            
+
             <entry>site-config.jam</entry>
-            
+
             <entry>user-config.jam</entry>
           </row>
-          
+
         </thead>
         <tbody>
-          
+
           <row>
             <entry>Linux</entry>
-            
+
             <entry>
               <simpara><code>/etc</code></simpara>
               <simpara><code>$HOME</code></simpara>
               <simpara><code>$BOOST_BUILD_PATH</code></simpara>
             </entry>
-            
+
             <entry>
               <simpara><code>$HOME</code></simpara>
               <simpara><code>$BOOST_BUILD_PATH</code></simpara>
             </entry>
           </row>
-          
+
           <row>
             <entry>Windows</entry>
-            
+
             <entry>
               <simpara><code>%SystemRoot%</code></simpara>
               <simpara><code>%HOMEDRIVE%%HOMEPATH%</code></simpara>
               <simpara><code>%HOME%</code></simpara>
               <simpara><code>%BOOST_BUILD_PATH%</code></simpara>
             </entry>
-            
+
             <entry>
               <simpara><code>%HOMEDRIVE%%HOMEPATH%</code></simpara>
               <simpara><code>%HOME%</code></simpara>
@@ -444,8 +444,8 @@ actions create-file-from-another
         </tbody>
       </tgroup>
     </table>
-    
-    <tip>    
+
+    <tip>
       <para>
         You can use the <command>--debug-configuration</command> option to
         find which configuration files are actually loaded.
@@ -453,7 +453,7 @@ actions create-file-from-another
     </tip>
 
     <para>
-      Usually, <filename>user-config.jam</filename> just defines available compilers
+      Usually, <filename>user-config.jam</filename> just defines the available compilers
       and other tools (see <xref linkend="bbv2.recipies.site-config"/> for more advanced
       usage). A tool is configured using the following syntax:
     </para>
@@ -462,7 +462,7 @@ actions create-file-from-another
 using <replaceable>tool-name</replaceable> : ... ;
 </programlisting>
 <para>
-      The <functionname>using</functionname> rule is given a name of tool, and
+      The <code language="jam">using</code> rule is given the name of tool, and
       will make that tool available to Boost.Build. For example,
 <programlisting>
 using gcc ;
@@ -476,9 +476,9 @@ using gcc ;
     </para>
 
     <para>
-      For all the C++ compiler toolsets Boost.Build supports
+      For all the C++ compiler toolsets that Boost.Build supports
       out-of-the-box, the list of parameters to
-      <functionname>using</functionname> is the same: <parameter
+      <code language="jam">using</code> is the same: <parameter
       class="function">toolset-name</parameter>, <parameter
       class="function">version</parameter>, <parameter
       class="function">invocation-command</parameter>, and <parameter
@@ -509,8 +509,8 @@ using msvc : : "Z:/Programs/Microsoft Visual Studio/vc98/bin/cl" ;
     <para>
       Some Boost.Build toolsets will use that path to take additional actions
       required before invoking the compiler, such as calling vendor-supplied
-      scripts to set up its required environment variables. When compiler
-      executables for C and C++ are different, path to the C++ compiler
+      scripts to set up its required environment variables. When the compiler
+      executables for C and C++ are different, the path to the C++ compiler
       executable must be specified. The command can
       be any command allowed by the operating system. For example:
 <programlisting>
@@ -521,13 +521,13 @@ using msvc : : echo Compiling &#x26;&#x26; foo/bar/baz/cl ;
 
     <para>
       To configure several versions of a toolset, simply invoke the
-      <functionname>using</functionname> rule multiple times:
+      <code language="jam">using</code> rule multiple times:
 <programlisting>
 using gcc : 3.3 ;
 using gcc : 3.4 : g++-3.4 ;
 using gcc : 3.2 : g++-3.2 ;
 </programlisting>
-      Note that in the first call to <functionname>using</functionname>, the
+      Note that in the first call to <code language="jam">using</code>, the
       compiler found in the <envar>PATH</envar> will be used, and there is no
       need to explicitly specify the command.
     </para>
@@ -552,7 +552,7 @@ using gcc : 3.4 : g++-3.4 ;
       Many of toolsets have an <parameter class="function">options</parameter>
       parameter to fine-tune the configuration. All of
       Boost.Build's standard compiler toolsets accept four options
-      <varname>cflags</varname>, <varname>cxxflags</varname>, 
+      <varname>cflags</varname>, <varname>cxxflags</varname>,
       <varname>compileflags</varname> and <varname>linkflags</varname> as <parameter
       class="function">options</parameter> specifying flags that will be
       always passed to the corresponding tools. Values of the
@@ -581,13 +581,13 @@ using gcc : 3.4 : g++-3.4 ;
     <section id="bbv2.overview.invocation">
       <title>Invocation</title>
 
-      <para>To invoke Boost.Build, type <command>bjam</command> on the command line. Three kinds
+      <para>To invoke Boost.Build, type <command>b2</command> on the command line. Three kinds
       of command-line tokens are accepted, in any order:</para>
       <variablelist>
         <varlistentry>
           <term>options</term>
 
-          <listitem><para>Options start with either dash, or two dashes.  The standard options
+          <listitem><para>Options start with either one or two dashes.  The standard options
           are listed below, and each project may add additional options</para></listitem>
         </varlistentry>
 
@@ -595,8 +595,8 @@ using gcc : 3.4 : g++-3.4 ;
           <term>properties</term>
 
           <listitem><para>Properties specify details of what you want to build (e.g. debug
-          or release variant).  Syntactically, all command line tokens with equal sign in them
-          are considered to specify properties.  In the simplest form, property looks like
+          or release variant).  Syntactically, all command line tokens with an equal sign in them
+          are considered to specify properties.  In the simplest form, a property looks like
           <command><replaceable>feature</replaceable>=<replaceable>value</replaceable></command>
           </para></listitem>
         </varlistentry>
@@ -604,7 +604,7 @@ using gcc : 3.4 : g++-3.4 ;
         <varlistentry>
           <term>target</term>
 
-          <listitem><para>All tokens that are neither options nor properties specify 
+          <listitem><para>All tokens that are neither options nor properties specify
           what targets to build.  The available targets entirely depend on the project
           you are building.</para></listitem>
         </varlistentry>
@@ -612,30 +612,30 @@ using gcc : 3.4 : g++-3.4 ;
 
       <section id="bbv2.overview.invocation.examples">
         <title>Examples</title>
-       
-        <para>To build all targets defined in Jamfile in the current directory with default properties, run:
+
+        <para>To build all targets defined in the Jamfile in the current directory with the default properties, run:
 <screen>
-bjam
+b2
 </screen>
         </para>
 
         <para>To build specific targets, specify them on the command line:
 <screen>
-bjam lib1 subproject//lib2
+b2 lib1 subproject//lib2
 </screen>
         </para>
 
         <para>To request a certain value for some property, add <literal>
         <replaceable>property</replaceable>=<replaceable>value</replaceable></literal> to the command line:
 <screen>
-bjam toolset=gcc variant=debug optimization=space
+b2 toolset=gcc variant=debug optimization=space
 </screen>
         </para>
       </section>
 
       <section id="bbv2.overview.invocation.options">
         <title>Options</title>
-      
+
         <para>Boost.Build recognizes the following command line options.</para>
 
         <variablelist>
@@ -649,7 +649,7 @@ bjam toolset=gcc variant=debug optimization=space
               </para>
             </listitem>
           </varlistentry>
-          
+
           <varlistentry>
             <term><option>--clean</option></term>
             <listitem>
@@ -659,7 +659,7 @@ bjam toolset=gcc variant=debug optimization=space
               together with target names to clean specific targets.</para>
             </listitem>
           </varlistentry>
-          
+
           <varlistentry>
             <term><option>--clean-all</option></term>
             <listitem>
@@ -669,28 +669,50 @@ bjam toolset=gcc variant=debug optimization=space
               </para>
             </listitem>
           </varlistentry>
-          
+
           <varlistentry>
             <term><option>--build-dir</option></term>
             <listitem>
-              <para>Changes build directories for all project roots being built. When
-              this option is specified, all Jamroot files should declare project name.
+              <para>Changes the build directories for all project roots being built. When
+              this option is specified, all Jamroot files must declare a project name.
               The build directory for the project root will be computed by concatanating
               the value of the <option>--build-dir</option> option, the project name
               specified in Jamroot, and the build dir specified in Jamroot
               (or <literal>bin</literal>, if none is specified).
               </para>
-              
+
               <para>The option is primarily useful when building from read-only
               media, when you can't modify Jamroot.
               </para>
             </listitem>
           </varlistentry>
-          
+
+          <varlistentry>
+            <term><option>--abbreviate-paths</option></term>
+            <listitem>
+              <para>Compresses target paths by abbreviating each component.
+              This option is useful to keep paths from becoming longer than
+              the filesystem supports.  See also <xref linkend="bbv2.reference.buildprocess.targetpath"/>.
+              </para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term><option>--hash</option></term>
+            <listitem>
+              <para>Compresses target paths using an MD5 hash.  This option is
+              useful to keep paths from becoming longer than the filesystem
+              supports.  This option produces shorter paths than --abbreviate-paths
+              does, but at the cost of making them less understandable.
+              See also <xref linkend="bbv2.reference.buildprocess.targetpath"/>.
+              </para>
+            </listitem>
+          </varlistentry>
+
           <varlistentry>
             <term><option>--version</option></term>
             <listitem>
-              <para>Prints information on Boost.Build and Boost.Jam
+              <para>Prints information on the Boost.Build and Boost.Jam
               versions.
               </para>
             </listitem>
@@ -713,7 +735,7 @@ bjam toolset=gcc variant=debug optimization=space
           <varlistentry>
             <term><option>-q</option></term>
             <listitem>
-              <para>Stop at first error, as opposed to continuing to build targets
+              <para>Stop at the first error, as opposed to continuing to build targets
               that don't depend on the failed ones.</para>
             </listitem>
           </varlistentry>
@@ -724,15 +746,15 @@ bjam toolset=gcc variant=debug optimization=space
               <para>Run up to <replaceable>N</replaceable> commands in parallel.</para>
             </listitem>
           </varlistentry>
-         
+
           <varlistentry>
             <term><option>--debug-configuration</option></term>
             <listitem>
-              <para>Produces debug information about loading of Boost.Build
+              <para>Produces debug information about the loading of Boost.Build
               and toolset files.</para>
             </listitem>
           </varlistentry>
-          
+
           <varlistentry>
             <term><option>--debug-building</option></term>
             <listitem>
@@ -740,21 +762,12 @@ bjam toolset=gcc variant=debug optimization=space
               </para>
             </listitem>
           </varlistentry>
-          
+
           <varlistentry>
             <term><option>--debug-generators</option></term>
             <listitem>
-              <para>Produces debug output from generator search process.
+              <para>Produces debug output from the generator search process.
               Useful for debugging custom generators.
-              </para>
-            </listitem>
-          </varlistentry>
-          
-          <varlistentry>
-            <term><option>--ignore-config</option></term>
-            <listitem>
-              <para>Do not load <literal>site-config.jam</literal> and
-              <literal>user-config.jam</literal> configuration files.
               </para>
             </listitem>
           </varlistentry>
@@ -769,7 +782,7 @@ bjam toolset=gcc variant=debug optimization=space
           <varlistentry>
             <term><option>-d <replaceable>N</replaceable></option></term>
             <listitem>
-              <para>Enable cummulative debugging levels from 1 to n. Values are: 
+              <para>Enable cummulative debugging levels from 1 to n. Values are:
               <orderedlist>
                 <listitem>Show the actions taken for building targets, as they are executed (the default).</listitem>
                 <listitem>Show "quiet" actions and display all action text, as they are executed.</listitem>
@@ -823,53 +836,53 @@ bjam toolset=gcc variant=debug optimization=space
         <para>In the simplest case, the build is performed with a single set of properties,
         that you specify on the command line with elements in the form
         <command><replaceable>feature</replaceable>=<replaceable>value</replaceable></command>.
-        The complete list of features can be found in <xref linkend="bbv2.overview.builtins.features"/>. 
+        The complete list of features can be found in <xref linkend="bbv2.overview.builtins.features"/>.
         The most common features are summarized below.</para>
 
         <table>
           <tgroup cols="3">
             <thead>
-              
+
               <row>
                 <entry>Feature</entry>
-                
+
                 <entry>Allowed values</entry>
-                
+
                 <entry>Notes</entry>
               </row>
-              
+
             </thead>
             <tbody>
-              
+
               <row>
                 <entry>variant</entry>
-                
+
                 <entry>debug,release</entry>
-                
+
                 <entry></entry>
               </row>
 
               <row>
                 <entry>link</entry>
-                
+
                 <entry>shared,static</entry>
-                
+
                 <entry>Determines if Boost.Build creates shared or static libraries</entry>
               </row>
 
               <row>
                 <entry>threading</entry>
-                
+
                 <entry>single,multi</entry>
-                
+
                 <entry>Cause the produced binaries to be thread-safe.  This requires proper support in the source code itself.</entry>
               </row>
 
               <row>
                 <entry>address-model</entry>
-                
+
                 <entry>32,64</entry>
-                
+
                 <entry>Explicitly request either 32-bit or 64-bit code generation. This typically
                 requires that your compiler is appropriately configured. Please refer to
                 <xref linkend="bbv2.reference.tools.compilers"/> and your compiler documentation
@@ -878,97 +891,98 @@ bjam toolset=gcc variant=debug optimization=space
 
               <row>
                 <entry>toolset</entry>
-                
+
                 <entry>(Depends on configuration)</entry>
-                
+
                 <entry>The C++ compiler to use. See <xref linkend="bbv2.reference.tools.compilers"/> for a detailed list.</entry>
               </row>
 
               <row>
                 <entry>include</entry>
-                
+
                 <entry>(Arbitrary string)</entry>
-                
+
                 <entry>Additional include paths for C and C++ compilers.</entry>
               </row>
 
               <row>
                 <entry>define</entry>
-                
+
                 <entry>(Arbitrary string)</entry>
-                
+
                 <entry>Additional macro definitions for C and C++ compilers. The string should be either
                 <code>SYMBOL</code> or <code>SYMBOL=VALUE</code></entry>
               </row>
 
               <row>
                 <entry>cxxflags</entry>
-                
+
                 <entry>(Arbitrary string)</entry>
-                
+
                 <entry>Custom options to pass to the C++ compiler.</entry>
               </row>
 
               <row>
                 <entry>cflags</entry>
-                
+
                 <entry>(Arbitrary string)</entry>
-                
+
                 <entry>Custom options to pass to the C compiler.</entry>
               </row>
 
               <row>
                 <entry>linkflags</entry>
-                
+
                 <entry>(Arbitrary string)</entry>
-                
+
                 <entry>Custom options to pass to the C++ linker.</entry>
               </row>
 
               <row>
                 <entry>runtime-link</entry>
-                
+
                 <entry>shared,static</entry>
-                
+
                 <entry>Determines if shared or static version of C and C++ runtimes should be used.</entry>
               </row>
-              
+
             </tbody>
-          </tgroup>          
+          </tgroup>
         </table>
 
-        If you have more than one version of a given C++ toolset (e.g. configured in
+        <para>If you have more than one version of a given C++ toolset (e.g. configured in
         <filename>user-config.jam</filename>, or autodetected, as happens with msvc), you can
-        request the specific version by passing 
+        request the specific version by passing
         <code><replaceable>toolset</replaceable>-<replaceable>version</replaceable></code> as
         the value of the <code>toolset</code> feature, for example <code>toolset=msvc-8.0</code>.
+        </para>
 
 
         <para>
-          If a feature has a fixed set of values it can be specified more than 
+          If a feature has a fixed set of values it can be specified more than
           once on the command line. <!-- define 'base' and link to it -->
           In which case, everything will be built several times --
           once for each specified value of a feature.  For example, if you use
         </para>
 <screen>
-bjam link=static link=shared threading=single threading=multi
+b2 link=static link=shared threading=single threading=multi
 </screen>
         <para>
-          Then a total of 4 builds will be performed.  For convenience, 
+          Then a total of 4 builds will be performed.  For convenience,
           instead of specifying all requested values of a feature in separate command line elements,
-          you can separate the values with commands, for example:
+          you can separate the values with commas, for example:
         </para>
 <screen>
-bjam link=static,shared threading=single,multi
+b2 link=static,shared threading=single,multi
 </screen>
         <para>
-          The comma has special meaning only if the feature has a fixed set of values, so
+          The comma has this special meaning only if the feature has a fixed set of values, so
         </para>
 <screen>
-bjam include=static,shared
+b2 include=static,shared
 </screen>
         <para>is not treated specially.</para>
-                
+
       </section>
 
       <section id="bbv2.overview.invocation.targets">
@@ -1068,7 +1082,7 @@ rule <replaceable>rule-name</replaceable> (
       </para>
 
       <para>The actual requirements for a target are obtained by refining
-      requirements of the project where a target is declared with the
+      the requirements of the project where the target is declared with the
       explicitly specified requirements. The same is true for
       usage-requirements. More details can be found in
       <xref linkend="bbv2.reference.variants.proprefine"/>
@@ -1108,7 +1122,8 @@ obj test.debug : test.cpp : &lt;variant&gt;debug ;
         files. Sometimes, you'll want to automatically construct the
         list of source files rather than having to spell it out
         manually, in which case you can use the
-        <functionname>glob</functionname> rule. Here are two examples:</para>
+        <link linkend="bbv2.reference.rules.glob">glob</link> rule.
+        Here are two examples:</para>
 <programlisting>
 exe a : a.cpp ;           # a.cpp is the only source file
 exe b : [ glob *.cpp ] ;  # all .cpp files in this directory are sources
@@ -1158,7 +1173,7 @@ exe c : c.cpp /boost/program_options//program_options ;
 <programlisting>
 exe hello : hello.cpp : &lt;include&gt;/opt/boost &lt;define&gt;MY_DEBUG ;
 </programlisting>
-        There is a number of other features, listed in
+        There are a number of other features, listed in
         <xref linkend="bbv2.overview.builtins.features"/>. For example if
         a library can only be built statically, or a file can't be compiled
         with optimization due to a compiler bug, one can use
@@ -1221,13 +1236,13 @@ rule my-rule ( properties * )
 
         <para>Requirements explicitly specified for a target are usually
         combined with the requirements specified for the containing project. You
-        can cause a target to completely ignore specific project's requirement
-        using the syntax by adding a minus sign before a property, for example:
+        can cause a target to completely ignore a specific project requirement
+        using the syntax by adding a minus sign before the property, for example:
 <programlisting>
 exe main : main.cpp : <emphasis role="bold">-&lt;define&gt;UNNECESSARY_DEFINE</emphasis> ;
 </programlisting>
-        This syntax is the only way to ignore free properties from a parent,
-        such as defines. It can be also useful for ordinary properties. Consider
+        This syntax is the only way to ignore free properties, such as defines,
+        from a parent. It can be also useful for ordinary properties. Consider
         this example:
 <programlisting>
 project test : requirements &lt;threading&gt;multi ;
@@ -1235,12 +1250,12 @@ exe test1 : test1.cpp ;
 exe test2 : test2.cpp : &lt;threading&gt;single ;
 exe test3 : test3.cpp : -&lt;threading&gt;multi ;
 </programlisting>
-        Here, <code>test1</code> inherits project requirements and will always
+        Here, <code>test1</code> inherits the project requirements and will always
         be built in multi-threaded mode. The <code>test2</code> target
-        <emphasis>overrides</emphasis> project's requirements and will
+        <emphasis>overrides</emphasis> the project's requirements and will
         always be built in single-threaded mode. In contrast, the
         <code>test3</code> target <emphasis>removes</emphasis> a property
-        from project requirements and will be built either in single-threaded or
+        from the project requirements and will be built either in single-threaded or
         multi-threaded mode depending on which variant is requested by the
         user.</para>
 
@@ -1260,7 +1275,7 @@ exe hello : hello.cpp : : &lt;threading&gt;multi ;
 </programlisting>
         would build a multi-threaded target unless the user
         explicitly requests a single-threaded version. The difference between
-        requirements and default-build is that requirements cannot be
+        the requirements and the default-build is that the requirements cannot be
         overridden in any way.
         </para>
       </section>
@@ -1276,7 +1291,7 @@ exe hello : hello.cpp : : &lt;threading&gt;multi ;
           it. We can express this situation using <firstterm>target
           alternatives</firstterm>:
 <programlisting>
-lib demangler : dummy_demangler.cpp ;                      # alternative 1
+lib demangler : dummy_demangler.cpp ;                # alternative 1
 lib demangler : demangler_gcc.cpp : &lt;toolset&gt;gcc ;   # alternative 2
 lib demangler : demangler_msvc.cpp : &lt;toolset&gt;msvc ; # alternative 3
 </programlisting>
@@ -1299,13 +1314,13 @@ exe hello : hello.cpp
            optimization. When referring to an inline main target, its declared
            name must be prefixed by its parent target's name and two dots. In
            the example above, to build only helpers, one should run
-           <code>bjam hello..helpers</code>.
+           <code>b2 hello..helpers</code>.
          </para>
 
          <para>When no target is requested on the command line, all targets in the
          current project will be built. If a target should be built only by
          explicit request, this can be expressed by the
-         <functionname>explicit</functionname> rule:
+         <link linkend="bbv2.reference.rules.explicit">explicit</link> rule:
          <programlisting>
 explicit install_programs ;</programlisting>
          </para>
@@ -1325,7 +1340,7 @@ explicit install_programs ;</programlisting>
       </para>
 
       <para>Projects are named using the
-      <functionname>project</functionname> rule, which has the
+      <code language="jam">project</code> rule, which has the
       following syntax:
 <programlisting>
 project <replaceable>id</replaceable> : <replaceable>attributes</replaceable> ;
@@ -1388,7 +1403,7 @@ project tennis
 
                 <entry>Default value</entry>
 
-                <entry>Handling by the <functionname>project</functionname>
+                <entry>Handling by the <code language="jam">project</code>
                 rule</entry>
 
               </row>
@@ -1541,7 +1556,7 @@ project tennis
         The command line specifies which targets to build and with which
         properties. For example:
 <programlisting>
-bjam app1 lib1//lib1 toolset=gcc variant=debug optimization=full
+b2 app1 lib1//lib1 toolset=gcc variant=debug optimization=full
 </programlisting>
         would build two targets, "app1" and "lib1//lib1" with the specified
         properties. You can refer to any targets, using
@@ -1549,7 +1564,7 @@ bjam app1 lib1//lib1 toolset=gcc variant=debug optimization=full
         properties. Some of the properties are very common, and for them the name
         of the property can be omitted. For example, the above can be written as:
 <programlisting>
-bjam app1 lib1//lib1 gcc debug optimization=full
+b2 app1 lib1//lib1 gcc debug optimization=full
 </programlisting>
         The complete syntax, which has some additional shortcuts, is
         described in <xref linkend="bbv2.overview.invocation"/>.
@@ -1640,7 +1655,7 @@ bjam app1 lib1//lib1 gcc debug optimization=full
     <section><title>Building a Project</title>
 
       <para>Often, a user builds a complete project, not just one main
-      target. In fact, invoking <command>bjam</command> without
+      target. In fact, invoking <command>b2</command> without
       arguments
       <!-- do you know the difference between parameters and
            arguments?  I only learned this year -->
